@@ -1,1 +1,1 @@
-[# sp6-2_smart-table_starter](https://github.com/APolyakov-S/smart-table.git)
+https://github.com/APolyakov-S/smart-table.git
