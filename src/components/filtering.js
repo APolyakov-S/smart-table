@@ -1,56 +1,52 @@
+// @todo: #4.3 — настроить компаратор
 export function initFiltering(elements) {
-  const updateIndexes = (elements, indexes) => {
-    Object.keys(indexes).forEach((elementName) => {
-      elements[elementName].append(
-        ...Object.values(indexes[elementName]).map((name) => {
-          const el = document.createElement("option");
-          el.textContent = name;
-          el.value = name;
-          return el;
-        })
-      );
-    });
-  };
+    const updateIndexes = (elements, indexes) => {
+        Object.keys(indexes).forEach((elementName) => {
+            elements[elementName].append(
+                ...Object.values(indexes[elementName]).map((name) => {
+                    const el = document.createElement("option");
+                    el.textContent = name;
+                    el.value = name;
+                    return el;
+                })
+            );
+        });
+    };
 
-  /**
-   * Строит query-параметры для серверной фильтрации
-   * @param {Object} query - исходный query (например, с пагинацией)
-   * @param {Object} state - объект фильтров (внутреннее состояние)
-   * @param {HTMLElement} [action] - кнопка действия
-   * @returns {Object} новый query
-   */
+    const applyFiltering = (query, state, action) => {
+        // код с обработкой очистки поля
+        const filterContainer = document.querySelector('[data-name="filter"]');
+        filterContainer.addEventListener("click", (e) => {
+            if (e.target.name === "clear") {
+                const parent = e.target.parentElement;
+                const clearField = parent.querySelector("input");
+                const fieldName = e.target.dataset.field;
+                clearField.value = "";
+                state[fieldName] = "";
+            }
+        });
+        // @todo: #4.5 — отфильтровать данные, используя компаратор
+        const filter = {};
+        Object.keys(elements).forEach((key) => {
+            if (elements[key]) {
+                if (
+                    ["INPUT", "SELECT"].includes(elements[key].tagName) &&
+                    elements[key].value
+                ) {
+                    // ищем поля ввода в фильтре с непустыми данными
+                    filter[`filter[${elements[key].name}]`] =
+                        elements[key].value; // чтобы сформировать в query вложенный объект фильтра
+                }
+            }
+        });
 
-  const applyFiltering = (query, state, action) => {
-    // @todo: #4.2 — обработать очистку поля
-    // если нажата кнопка очистки поля фильтра
-    if (action && action.name === "clear") {
-      const container = action.closest(".table-column");
-      const input = container.querySelector("input");
-      input.value = "";
-      state[action.dataset.field] = "";
-    }
-    // @todo: #4.5 — отфильтровать данные используя компаратор
-    // создаём объект фильтра на основе значений input/select в фильтрах
-    const filter = {};
-    Object.keys(elements).forEach((key) => {
-      if (elements[key]) {
-        if (
-          ["INPUT", "SELECT"].includes(elements[key].tagName) &&
-          elements[key].value
-        ) {
-          // ищем поля ввода в фильтре с непустыми данными
-          filter[`filter[${elements[key].name}]`] = elements[key].value; // чтобы сформировать в query вложенный объект фильтра
-        }
-      }
-    });
-    // если фильтр заполнен — добавляем его к query
-    return Object.keys(filter).length
-      ? Object.assign({}, query, filter)
-      : query; // если в фильтре что-то добавилось, применим к запросу
-  };
+        return Object.keys(filter).length
+            ? Object.assign({}, query, filter)
+            : query; // если в фильтре что-то добавилось, применим к запросу
+    };
 
-  return {
-    updateIndexes,
-    applyFiltering,
-  };
+    return {
+        updateIndexes,
+        applyFiltering,
+    };
 }
