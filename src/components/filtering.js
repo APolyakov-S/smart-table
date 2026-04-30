@@ -13,18 +13,18 @@ export function initFiltering(elements) {
         });
     };
 
-    const applyFiltering = (query, state, action) => {
-        // код с обработкой очистки поля
-        const filterContainer = document.querySelector('[data-name="filter"]');
-        filterContainer.addEventListener("click", (e) => {
-            if (e.target.name === "clear") {
-                const parent = e.target.parentElement;
-                const clearField = parent.querySelector("input");
-                const fieldName = e.target.dataset.field;
-                clearField.value = "";
-                state[fieldName] = "";
-            }
-        });
+   const applyFiltering = (query, state, action) => {
+    // проверяем, что action существует и это кнопка с именем "clear"
+    if (action && action.name === "clear") {
+        const parent = action.parentElement;
+        const clearField = parent.querySelector("input");
+        const fieldName = action.dataset.field;
+        
+        if (clearField) {
+            clearField.value = "";
+            state[fieldName] = "";
+        }
+    }
         // @todo: #4.5 — отфильтровать данные, используя компаратор
         const filter = {};
         Object.keys(elements).forEach((key) => {
